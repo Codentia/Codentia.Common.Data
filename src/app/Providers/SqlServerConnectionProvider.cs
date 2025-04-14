@@ -248,5 +248,10 @@
 
             return new SqlConnection(_connectionString);
         }
+        
+        public async Task<T> ExecuteMaxConn<T>(DbParameter[] maxConnection, int commandTimeout = 30)
+        {
+            throw new System.NotSupportedException("Cannot call ExecuteMaxConn, not implemented for this provider.");
+        }
     }
 }

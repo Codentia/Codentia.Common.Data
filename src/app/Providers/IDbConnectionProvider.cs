@@ -36,5 +36,7 @@ namespace Codentia.Common.Data.Providers
         /// <param name="commandTimeout">Command Timeout</param>
         /// <returns>Task of type T</returns>
         Task<T> Execute<T>(DbQueryType queryType, string query, DbParameter[] parameters, int commandTimeout = 30);
-   }
+        
+        Task<T> ExecuteMaxConn<T>(DbParameter[] maxConnection, int commandTimeout = 30);
+    }
 }

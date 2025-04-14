@@ -299,5 +299,47 @@ namespace Codentia.Common.Data.Providers
 
             return new MySqlConnection(_connectionString);
         }
+        
+        
+        /// <summary>
+        /// Updates Max Connections to the value provided
+        /// </summary>
+        /// <returns>
+        /// Execute update for max connections
+        /// </returns>
+        public async Task<T> ExecuteMaxConn<T>(DbParameter[] maxConnection, int commandTimeout = 30)
+        {
+            MySqlConnection connection = this.GetConnection();
+
+            T result = default(T);
+
+            string query = "SET GLOBAL max_connections = @MaxConnection;"; // this can only be done with connection strings with SUPER or greater
+
+            MySqlCommand command = new MySqlCommand(query, connection);
+            command.CommandType = CommandType.Text;
+            
+            if (maxConnection != null && maxConnection.Length > 0)
+            {
+                command.Parameters.AddRange(ImportParameters(maxConnection));
+            }
+
+            command.CommandTimeout = commandTimeout;
+
+            if (connection.State != ConnectionState.Open)
+            {
+                await connection.OpenAsync();
+            }
+            
+            result = MySqlConnectionProvider.Execute<T>(connection, command, typeof(T) != typeof(DBNull)).Result;
+
+            if (connection.State == ConnectionState.Open)
+            {
+                connection.Close();
+                connection.Dispose();
+                command.Dispose();
+            }
+
+            return result;
+        }
     }
 }

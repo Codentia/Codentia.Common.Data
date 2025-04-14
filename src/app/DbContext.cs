@@ -66,5 +66,29 @@ namespace Codentia.Common.Data
 
             throw new System.ArgumentException("Query not specified");
         }
+        
+        protected async Task<T> ExecuteMaxConn<T>(string maxConn, int commandTimeout = 30)
+        {
+            if (maxConn.Trim().IndexOf(' ') > 0)
+            {
+                DbParameter[] parameters = new DbParameter[]
+                {
+                    new DbParameter("@MaxConnection", DbType.String, maxConn)
+                };
+                
+                if (parameters != null)
+                {
+                    return await this.ConnectionProvider.ExecuteMaxConn<T>(parameters, commandTimeout: commandTimeout).ConfigureAwait(false);
+                }
+                else
+                {
+                    throw new System.ArgumentException("parameters not specified");
+                }
+            }
+            else
+            {
+                throw new System.ArgumentException("Max Connection not specified");
+            }
+        }
     }
 }
